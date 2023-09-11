@@ -1,0 +1,119 @@
+### PHYSICS LIST ###
+s:Ph/Default/Type = "QGSP_BIC_EMY"
+
+### WORLD ###
+s:Ge/World/Material		="Vacuum"
+d:Ge/World/HLX 			=20.0 cm
+d:Ge/World/HLY			=20.0 cm
+d:Ge/World/HLZ 			=35.0 cm
+s:Ge/World/DefaultColor	="white"
+
+### Defining the geometry, type, parent and material of the box. ###
+s:Ge/Phantom/Type		="TsBox"
+s:Ge/Phantom/Parent		="World"
+
+### PHANTOM MATERIAL ###
+s:Ge/Phantom/Material	="G4_WATER"
+d:Ge/Phantom/HLX		=100 mm 			# From the center to the boundary
+d:Ge/Phantom/HLY		=100 mm
+d:Ge/Phantom/HLZ		=175 mm
+### BINS ###
+i:Ge/Phantom/ZBins 	= 1
+i:Ge/Phantom/XBins 	= 1
+i:Ge/Phantom/YBins 	= 1
+
+# LaBr3(5% Ce)
+sv:Ma/CEBR3/Components=3 "Lanthanum" "Bromine" "Cerium"
+uv:Ma/CEBR3/Fractions=3 0.39941 0.55059 0.05
+d:Ma/CEBR3/Density=5.08 g/cm3
+s:Ma/CEBR3/State		= "Solid"
+s:Ma/CEBR3/DefaultColor	= "white"
+
+### GAMMA DETECTOR ###
+s:Ge/Detector/Type		="TsCylinder"
+s:Ge/Detector/Material	= "CEBR3"
+s:Ge/Detector/Parent	="World"
+d:Ge/Detector/TransZ	= -177 mm - Ge/Detector/HL
+d:Ge/Detector/RMax		= 12.7 mm
+d:Ge/Detector/HL		= 19.05 mm
+
+
+
+###### Scoring the information that I want ######
+	### From the Phantom
+#s:Sc/MyScorer/OutputFile 	= "230mev.Gaussian"
+#s:Sc/MyScorer/Quantity		="DoseToMedium"
+#s:Sc/MyScorer/Component	="Phantom"
+#s:Sc/MyScorer/OutputType 	= "binary"
+#s:Sc/MyScorer/OutputType 	= "csv"
+
+	#### From the Detector 
+#s:Sc/DetectorFF/OutputFile 					= "PGamma_2mm_FrontFace"
+s:Sc/DetectorFF/Quantity 					= "SurfaceTrackCount"
+s:Sc/DetectorFF/Components					= "Detector"
+s:Sc/DetectorFF/Surface 					= "Detector/ZMinusSurface"
+b:Sc/DetectorFF/PropagateToChildren 		= "True"
+sv:Sc/DetectorFF/OnlyIncludeParticlesNamed 	= 1 "gamma"
+s:Sc/DetectorFF/OutputType 					= "csv"
+s:Sc/DetectorFF/IfOutputFileAlreadyExists 	= "Overwrite"
+
+	#### From the Detector 
+#s:Sc/DetectorBF/OutputFile 					= "PGamma_2mm_BackFace"
+s:Sc/DetectorBF/Quantity 					= "SurfaceTrackCount"
+s:Sc/DetectorBF/Components					= "Detector"
+s:Sc/DetectorBF/Surface 					= "Detector/ZPlusSurface"
+b:Sc/DetectorBF/PropagateToChildren 		= "True"
+sv:Sc/DetectorBF/OnlyIncludeParticlesNamed 	= 1 "gamma"
+s:Sc/DetectorBF/OutputType 					= "csv"
+s:Sc/DetectorBF/IfOutputFileAlreadyExists 	= "Overwrite"
+
+	#### From the Detector 
+#s:Sc/DetectorOCF/OutputFile 				= "PGamma_2mm_OuterCurved"
+s:Sc/DetectorOCF/Quantity 					= "SurfaceTrackCount"
+s:Sc/DetectorOCF/Component 					= "Detector"
+s:Sc/DetectorOCF/Surface 					= "Detector/OuterCurvedSurface"
+b:Sc/DetectorOCF/PropagateToChildren 		= "True"
+sv:Sc/DetectorOCF/OnlyIncludeParticlesNamed = 1 "gamma"
+s:Sc/DetectorOCF/OutputType 				= "csv"
+s:Sc/DetectorOCF/IfOutputFileAlreadyExists 	= "Overwrite"
+
+############### Using all my CPU cores
+i:Ts/NumberOfThreads 				= 2 # My Mac only has 2 so...
+#b:Ts/BufferThreadOutput 			= "True" # Causes console output to be show one thread at a time
+i:Ts/ShowHistoryCountAtInterval 	= 100000
+
+
+############### Overwriting MyScorer file
+s:Sc/MyScorer/IfOutputFileAlreadyExists ="Overwrite"
+
+
+############### Beam Characteristics
+s:So/Source/Type = "Beam" # Beam, Isotropic, Emittance or PhaseSpace
+s:So/Source/Component = "BeamPosition"
+s:So/Source/BeamParticle = "proton"
+d:So/Source/BeamEnergy =  200 MeV
+u:So/Source/BeamEnergySpread = 0
+s:So/Source/BeamPositionDistribution = "Gaussian" # None, Flat or Gaussian
+s:So/Source/BeamPositionCutoffShape = "Ellipse" # Rectangle or Ellipse (if Flat or Gaussian)
+d:So/Source/BeamPositionCutoffX = 2. cm # X extent of position (if Flat or Gaussian)
+d:So/Source/BeamPositionCutoffY = 2. cm # Y extent of position (if Flat or Gaussian)
+d:So/Source/BeamPositionSpreadX = 5.0 mm # distribution (if Gaussian)
+d:So/Source/BeamPositionSpreadY = 5.0 mm # distribution (if Gaussian)
+s:So/Source/BeamAngularDistribution = "Gaussian" # None, Flat or Gaussian
+d:So/Source/BeamAngularCutoffX = 0.01 deg # X cutoff of angular distrib (if Flat or Gaussian)
+d:So/Source/BeamAngularCutoffY = 0.01 deg # Y cutoff of angular distrib (if Flat or Gaussian)
+d:So/Source/BeamAngularSpreadX = 0.0032 rad # X angular distribution (if Gaussian)
+d:So/Source/BeamAngularSpreadY = 0.0032 rad # Y angular distribution (if Gaussian)
+
+# How many particles do I send
+i:So/Source/NumberOfHistoriesInRun = 20
+
+# Bin 19 is actually getting hit first, so we rotate the Phantom
+d:Ge/Phantom/RotX = 180.0 deg
+
+# Open Graphics
+s:Gr/MyGraphic1/Type = "OpenGL"
+b:Ts/ShowCPUTime = "True"
+i:Ts/Seed = 35
+
+
