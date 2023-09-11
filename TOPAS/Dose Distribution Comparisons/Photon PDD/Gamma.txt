@@ -1,0 +1,69 @@
+### PHYSICS LIST ###
+s:Ph/Default/Type = "QGSP_BIC_EMY"
+i:Ts/Seed = 6
+
+### WORLD ###
+s:Ge/World/Material		="Vacuum"
+d:Ge/World/HLX 			=20.0 cm
+d:Ge/World/HLY			=20.0 cm
+d:Ge/World/HLZ 			=15.0 cm
+s:Ge/World/DefaultColor	="white"
+
+### Defining the geometry, type, parent and material of the box. ###
+s:Ge/Phantom/Type		="TsBox"
+s:Ge/Phantom/Parent		="World"
+
+### PHANTOM MATERIAL ###
+s:Ge/Phantom/Material	="G4_WATER"
+d:Ge/Phantom/HLX		=100 mm 			# From the center to the boundary
+d:Ge/Phantom/HLY		=100 mm
+d:Ge/Phantom/HLZ		=150 mm
+### BINS ###
+i:Ge/Phantom/ZBins 	= 300
+i:Ge/Phantom/XBins 	= 1
+i:Ge/Phantom/YBins 	= 1
+
+
+###### Scoring the information that I want ######
+	### From the Phantom
+s:Sc/MyScorer/OutputFile 	= "GammaCoMeV"
+s:Sc/MyScorer/Quantity		="DoseToMedium"
+s:Sc/MyScorer/Component		="Phantom"
+s:Sc/MyScorer/OutputType 	= "csv"
+
+############### Using all my CPU cores
+i:Ts/NumberOfThreads 				= 2 # My Mac only has 2 so...
+#b:Ts/BufferThreadOutput 			= "True" # Causes console output to be show one thread at a time
+i:Ts/ShowHistoryCountAtInterval 	= 100000
+
+
+############### Overwriting MyScorer file
+s:Sc/MyScorer/IfOutputFileAlreadyExists ="Overwrite"
+
+
+############### Beam Characteristics
+s:So/Source/Type = "Beam" # Beam, Isotropic, Emittance or PhaseSpace
+s:So/Source/Component = "BeamPosition"
+s:So/Source/BeamParticle = "gamma"
+d:So/Source/BeamEnergy = 1.1732 MeV
+u:So/Source/BeamEnergySpread = 0
+s:So/Source/BeamPositionDistribution = "Flat" # None, Flat or Gaussian
+s:So/Source/BeamPositionCutoffShape = "Rectangle" # Rectangle or Ellipse (if Flat or Gaussian)
+d:So/Source/BeamPositionCutoffX = 5. cm # X extent of position (if Flat or Gaussian)
+d:So/Source/BeamPositionCutoffY = 5. cm # Y extent of position (if Flat or Gaussian)
+d:So/Source/BeamPositionSpreadX = 5.0 mm # distribution (if Gaussian)
+d:So/Source/BeamPositionSpreadY = 5.0 mm # distribution (if Gaussian)
+s:So/Source/BeamAngularDistribution = "Flat" # None, Flat or Gaussian
+d:So/Source/BeamAngularCutoffX = 0.01 deg # X cutoff of angular distrib (if Flat or Gaussian)
+d:So/Source/BeamAngularCutoffY = 0.01 deg # Y cutoff of angular distrib (if Flat or Gaussian)
+d:So/Source/BeamAngularSpreadX = 0.0032 rad # X angular distribution (if Gaussian)
+d:So/Source/BeamAngularSpreadY = 0.0032 rad # Y angular distribution (if Gaussian)
+
+# How many particles do I send
+i:So/Source/NumberOfHistoriesInRun = 30000000
+
+# Bin 19 is actually getting hit first, so we rotate the Phantom
+d:Ge/Phantom/RotX = 180.0 deg
+
+# Open Graphics
+#s:Gr/MyGraphic1/Type = "OpenGL"
